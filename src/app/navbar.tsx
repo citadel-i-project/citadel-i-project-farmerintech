@@ -13,22 +13,7 @@ import { toggle } from "@/lib/utils";
 import SignUpPage from "./authPage/signup/signupPage";
 import SignInPage from "./authPage/signin/signinPage";
 import { useUser } from "./context/reducer";
-import { FaUser } from "react-icons/fa";
- 
-// import {
-//   Avatar,
-//   AvatarFallback,
-//   AvatarImage,
-// } from "@/components/ui/avatar"
-// import {
-//   HoverCard,
-//   HoverCardContent,
-//   HoverCardTrigger,
-// } from "@/components/ui/hover-card"
-
-
-
-
+import { FaUser, FaUserCircle } from "react-icons/fa";
 export default function Header() {
   // State to manage mobile menu visibility
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -46,9 +31,11 @@ export default function Header() {
          const [showLogin, setShowLogin] = useState(false)
          const showRegPage = () =>{
            toggle(setShowReg, showReg); // then toggle the registration page
+           toggleMobileMenu()
          }
          const showLoginPage = () =>{
           toggle(setShowLogin, showLogin); // then toggle the registration page
+          toggleMobileMenu()
         }
   
   useEffect(() => {
@@ -57,16 +44,17 @@ export default function Header() {
   }, [pathname]); 
   return (
     <>
- {showReg  && 
-      <div className='md:fixed absolute pl-5 pr-5 pt-5 md:p-0 inset-0 bg-[#0000008F] bg-opacity-50  z-40'>
-        <SignUpPage setShowReg={setShowReg}/>
-      </div>
-      }
-      {showLogin  && 
-      <div className='md:fixed absolute p-10 md:p-0 inset-0 bg-[#0000008F] bg-opacity-50  z-40'>
-        <SignInPage setShowLogin={setShowLogin}/>
-      </div>
-      }    
+ {showReg && (
+        <div className='fixed pl-5 pr-5 pt-5 md:p-0 inset-0 bg-[#0000008F] bg-opacity-50 z-40'>
+          <SignUpPage setShowReg={setShowReg} />
+        </div>
+      )}
+
+      {showLogin && (
+        <div className='fixed pl-5 pr-5 pt-5 md:p-0 inset-0 bg-[#0000008F] bg-opacity-50 z-40'>
+          <SignInPage setShowLogin={setShowLogin} />
+        </div>
+      )}
     <header className=" flex  w-[100%] bg-[#FEF6E6] md:bg-[#FFFFFF]" >
       <nav className=" p-[24px] md:p-0  flex justify-between w-[100%] ">
         {/* Logo */}
@@ -118,9 +106,11 @@ export default function Header() {
                 </span>
         
        {state.isLoggedIn && state.firstName!==null ?
-       <span className="flex items-center w-[30px] h-[30px] rounded-full justify-center border-1 border-orange-500">
-        <FaUser/>
-       </span>
+                <div className=" py-10 flex gap-[12px] items-center">
+                 <p className="flex items-center justify-center w-[50px] h-[50px] rounded-full justify-center">   <FaUserCircle color="orange" size={20}/></p>
+                 <p>Hello, {state?.firstName  || ''} {state?.lastName || ""} 
+                 </p>
+                </div>
        :
        <span className="flex items-center gap-[5px]">
         <Button className="bg-[#FF5900] w-[97px] h-[35px] text-[16px] text-white"  onClick={()=>{showRegPage()}}>
@@ -141,7 +131,7 @@ export default function Header() {
           }`}
           onClick={() => setCurrentNav(0)}
         >
-          <Link href="/">Home</Link>
+          <Link href="/" >Home</Link>
         </li>
 
         {/* Classes Dropdown */}
@@ -152,31 +142,6 @@ export default function Header() {
           onMouseEnter={() => setIsClassesDropdownOpen(true)}
           onMouseLeave={() => setIsClassesDropdownOpen(false)}
         >
-      {/* <HoverCard>
-      <HoverCardTrigger asChild>
-        <Button variant="link">@nextjs</Button>
-      </HoverCardTrigger>
-      <HoverCardContent className="w-80">
-        <div className="flex justify-between space-x-4">
-          <Avatar>
-            <AvatarImage src="https://github.com/vercel.png" />
-            <AvatarFallback>VC</AvatarFallback>
-          </Avatar>
-          <div className="space-y-1">
-            <h4 className="text-sm font-semibold">@nextjs</h4>
-            <p className="text-sm">
-              The React Framework – created and maintained by @vercel.
-            </p>
-            <div className="flex items-center pt-2">
-              <CalendarIcon className="mr-2 h-4 w-4 opacity-70" />{" "}
-              <span className="text-xs text-muted-foreground">
-                Joined December 2021
-              </span>
-            </div>
-          </div>
-        </div>
-      </HoverCardContent>
-    </HoverCard> */}
 
           <Link href={'#'}>Classes</Link>
           {isClassesDropdownOpen && (
@@ -191,8 +156,8 @@ export default function Header() {
               <Link href="/classes/KS3" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black"  onClick={() => setCurrentNav(1)}>
                 KS3
               </Link>
-              <Link href="/classes/SSCE_GCE" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black"  onClick={() => setCurrentNav(1)}>
-                SSCE/GCE
+              <Link href="/classes/SSCE%2FIGCE" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black"  onClick={() => setCurrentNav(1)}>
+                SSCE/IGCE
               </Link>
             </div>
           )}
@@ -315,7 +280,7 @@ export default function Header() {
 
         {/* Book a Tutor Button */}
         <Button className="block text-[#FF5900] text-[16px] bg-[#FFEEE6] hover:text-white">
-          <Link href="/">Book a Tutor</Link>
+          <Link href="/bookings">Book a Tutor</Link>
         </Button>
       </div>
     </nav>
@@ -330,7 +295,7 @@ export default function Header() {
       >
         <ul className="flex flex-col   gap-[32px]">
         <li className=" leading-[20.02px] text-[18px] font-normal text-[#130F26]">
-          <Link href="/">Home</Link>
+          <Link href="/" onClick={()=> toggleMobileMenu()}>Home</Link>
         </li>
         <li className="leading-[20.02px] text-[18px] font-normal text-[#130F26]"
          onMouseEnter={() => setIsClassesDropdownOpen(true)}
@@ -338,30 +303,30 @@ export default function Header() {
         >
           <Link href="">Classes</Link>
           {isClassesDropdownOpen && (
-            <div className="flex flex-col bg-white shadow-md w-[120px]">
-              <Link href="/classes/ks1" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black">
+            <div onClick={()=> toggleMobileMenu()} className="flex flex-col bg-white shadow-md w-[120px]">
+              <Link href="/classes/KS1" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black">
                 KS1
               </Link>
-              <Link href="/classes/ks2" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black">
+              <Link href="/classes/KS2" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black">
                 KS2
               </Link>
-              <Link href="/classes/ks3" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black">
+              <Link href="/classes/KS3" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black">
                 KS3
               </Link>
-              <Link href="/classes/ssce" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black">
-                SSCE/GCE
+              <Link href="/classes/SSCE%2FIGCE" className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black">
+                SSCE/IGCE
               </Link>
             </div>
           )}
         </li>
         <li className="leading-[20.02px] text-[18px] font-normal text-[#130F26]">
-          <Link href="/admission_info">Admission Info</Link>
+          <Link href="/admission_info" onClick={()=> toggleMobileMenu()}>Admission Info</Link>
         </li>
         <li className="leading-[20.02px] text-[18px] font-normal text-[#130F26]">
-          <Link href="/counselling">Counselling</Link>
+          <Link href="/counselling" onClick={()=> toggleMobileMenu()}>Counselling</Link>
         </li>
         <li className="leading-[20.02px] text-[18px] font-normal text-[#130F26]">
-          <Link href="/holiday_coaching">Holiday Coaching</Link>
+          <Link href="/holiday_coaching" onClick={()=> toggleMobileMenu()}>Holiday Coaching</Link>
         </li>
         <li
           className={`relative text-[16px] border-[#FF5900] font-normal flex items-center gap-[4px] hover:text-[#FF5900] hover ${
@@ -371,7 +336,7 @@ export default function Header() {
           onMouseLeave={() => setIsExamDropDown(false)}
         >Exam Preparation
           {isExamDropDown && (
-              <div className="absolute left-0 top-[100%] flex flex-col bg-white shadow-md  w-[150px]" >
+              <div onClick={()=> toggleMobileMenu()} className="absolute left-0 top-[100%] flex flex-col bg-white shadow-md  w-[150px]" >
                 <Link
                   href="/exam_preparation"
                   className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black w-full"
@@ -398,7 +363,7 @@ export default function Header() {
         >
           <Link href="">Resources</Link>
           {isResourcesDropdownOpen && (
-              <div className="flex flex-col bg-white shadow-md  w-[120px] mt-[16px]">
+              <div onClick={()=> toggleMobileMenu()} className= "flex flex-col bg-white shadow-md  w-[120px] mt-[16px]">
                 <Link
                   href="/resources/teacher"
                   className="px-4 py-2 hover:bg-[#FF5900] hover:text-white text-black "
@@ -417,18 +382,23 @@ export default function Header() {
         </li>
         
         <li className="leading-[20.02px] text-[18px] font-normal text-[#130F26]">
-          <Link href="/sponsor">Sponsor a student</Link>
+          <Link href="/sponsor" onClick={()=> toggleMobileMenu()}>Sponsor a student</Link>
         </li>
           <li>
           </li>
         </ul>
+         <Button className="block text-[#FF5900] text-[16px] bg-[#FFEEE6] hover:text-white">
+          <Link href="/bookings" onClick={()=> toggleMobileMenu()}>Book a Tutor</Link>
+        </Button>
        { 
-              state.isLoggedIn ?
-                <span className="flex items-center justify-center w-[50px] h-[50px] rounded-full justify-center border-1 border-orange-500">
-                 <FaUser/>
-                </span>
+              state.isLoggedIn  && state.firstName!==null ?
+                <div className=" py-10 flex gap-[12px] items-center">
+                 <p className="flex items-center justify-center w-[50px] h-[50px] rounded-full justify-center">   <FaUserCircle color="orange" size={20}/></p>
+                 <p>Hello, {state?.firstName || ''} {state?.lastName || ""} 
+                 </p>
+                </div>
          :
-        <span className="flex justify-center flex-col items-center gap-[5px]">
+        <span className="py-10 flex justify-center flex-col items-center gap-[5px]">
           <Button className="bg-[#FF5900] text-[16px] text-white w-full" variant="outline" onClick={()=>{showRegPage()}}>Register</Button>
           <Button className="border-[1px] text-[16px] bg-transparent text-black border-black w-full" variant='default' onClick={()=>{showLoginPage()}}>Log in</Button>
         </span>}
@@ -439,5 +409,8 @@ export default function Header() {
     </>
   );
 }
+
+
+
 
 

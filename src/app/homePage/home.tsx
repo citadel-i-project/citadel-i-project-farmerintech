@@ -5,13 +5,40 @@ import { Button } from '@/components/ui/button'
 import Waec from '@/app/assets/Frame 70.png'
 import { Checkbox } from '@/components/ui/checkbox'
 import Client from '@/app/assets/Attending the Client 1.png'
-import Whatsapp from '@/app/assets/WhatsApp Image 2025-02-16 at 10.40.54_70d95c85.png'
+import newasset from '@/app/assets/assetnew.jpg'
 import Frame from '@/app/assets/Frame 99.png'
-import Frame7 from '@/app/assets/Frame 97.png'
+import sponsor from '@/app/assets/sponsor.jpg'
 import Star from '@/app/assets/glowing-star.png'
+import Link from 'next/link'
+import { toggle } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import SignUpPage from '../authPage/signup/signupPage'
+import SignInPage from "../authPage/signin/signinPage";
+
 export default function home() {
+           const [showReg, setShowReg] = useState(false)
+         const [showLogin, setShowLogin] = useState(false)
+         const showRegPage = () =>{
+           toggle(setShowReg, showReg); // then toggle the registration page
+         }
+         const showLoginPage = () =>{
+          toggle(setShowLogin, showLogin); // then toggle the registration page
+        }
+
   return (
     <>
+       {showReg && (
+        <div className='fixed pl-5 pr-5 pt-5 md:p-0 inset-0 bg-[#0000008F] bg-opacity-50 z-40'>
+          <SignUpPage setShowReg={setShowReg} />
+        </div>
+      )}
+
+      {showLogin && (
+        <div className='fixed pl-5 pr-5 pt-5 md:p-0 inset-0 bg-[#0000008F] bg-opacity-50 z-40'>
+          <SignInPage setShowLogin={setShowLogin} />
+        </div>
+      )}
+
       <main className="py-[32px] flex  md:flex-row flex-col  md:px-[100px] px-[24px]  bg-[#F4B733] ">
         <div className="md:w-[585px] flex flex-col gap-[32px] md:h-[286px]h-auto">
           <h2 className="text-[32px] max-w-[585px] font-semibold leading-[38.73px]">
@@ -24,7 +51,7 @@ export default function home() {
               top-quality learning materials, structured lesson plans, and
               expert guidance to help your child excel academically.
             </p>
-            <Button className="w-[197px] h-[48px] text-[18px] bg-[#FF5900]">
+            <Button className="w-[197px] h-[48px] text-[18px] bg-[#FF5900]"  onClick={()=>showRegPage()}>
               Register Now
             </Button>
           </span>
@@ -154,13 +181,15 @@ export default function home() {
             </div>
             <span className=" flex  xl:flex-row flex-col gap-[20px] pt-8 ">
               <Button className="w-auto md:text-[18px] text-[12px]  bg-[#FF5900]">
-                Access Guide and Past Questions
+                <Link href="/exam_preparation"> Access Guide and Past Questions</Link>
+               
               </Button>
               <Button
                 variant="outline"
                 className="hover:bg-black w-auto md:text-[18px] text-[12px] hover:text-white border-[1px] border-black"
               >
-                Book a free consultation
+                <Link href="/bookings">Book a free consultation</Link>
+                
               </Button>
             </span>
           </div>
@@ -173,7 +202,7 @@ export default function home() {
             Educational & Career Counselling
           </h2>
           <span
-            className="flex w-auto lg:w-[541px] lg:h-[194px] rounded-[8px]   flex-col bg-[#F6C354] p-[16px]
+            className="flex w-auto lg:w-[541px] lg:h-[194px] rounded-[8px]   flex-col bg-[#3E414A] text-white p-[16px]
      gap-[8px]"
           >
             <h3 className="text-[18px] font-semibold">
@@ -258,7 +287,8 @@ export default function home() {
               variant="outline"
               className="hover:bg-black hover:text-white border-[1px] border-black"
             >
-              Book a Free Counselling Session Today
+           <Link href="/bookings">Book a Free Counselling Session Today</Link>
+              
             </Button>
           </span>
         </div>
@@ -270,7 +300,7 @@ export default function home() {
 
       <main className="flex lg:px-[100px] bg-[#FFF8EA] items-center py-[24px] md:flex-row flex-col md:py-[64px] md:min-h-[662px]  px-[24px] justify-center md:pt-[100px] gap-[56px]">
         <div className="md:w-[471px]  lg:h-auto w-full">
-          <Image src={Whatsapp} alt="" layout="responsive" />
+          <Image src={newasset} alt="" layout="responsive" />
         </div>
         <div className="md:w-[581px] flex flex-col gap-[38px] md:h-auto">
           <h2 className="font-semibold text-[24px]">
@@ -323,18 +353,19 @@ export default function home() {
 
           <span className=" flex gap-[20px]">
             <Button
-              className=" h-[48px] text-[18px] hover:text-white bg-[#FF5900] text-white">
-              Register Now to Secure a Spot
+              className=" h-[48px] text-[18px] hover:text-white bg-[#FF5900] text-white" onClick={()=>showRegPage()}>
+             Register Now to Secure a Spot
+              
             </Button>
           </span>
         </div>
       </main>
 
-      <main className="flex lg:px-[100px] bg-[#FFFBF9] px-[24px] md:flex-row flex-col s py-[32px]  justify-center items-center md:py-[100px] gap-[56px]">
+      <main className="flex lg:px-[100px] bg-[#FFFBF9] px-[24px] md:flex-row flex-col  py-[32px]  justify-center items-center md:py-[100px] gap-[56px]">
         <div className="md:w-[471px] w-full h-auto">
           <Image src={Frame} alt="" layout="responsive" />
         </div>
-        <div className="lg:w-[581px] md:w-[420px] flex-1  flex flex-col gap-[16px]  md:h-[455px] px-[24px]">
+        <div className="lg:w-[581px] md:w-[420px] flex-1  flex flex-col gap-[16px]  md:h-[455px] mx:px-[24px] px-[16px]">
           <h2 className="font-semibold text-[24px]">Book a Tutor</h2>
           <span className="flex flex-col gap-[10px]">
             <h3 className="text-[18px] font-semibold">
@@ -378,10 +409,11 @@ export default function home() {
             </span>
           </span>
 
-          <span className=" flex gap-[20px]">
+          <span className=" flex flex-col md:flex-row gap-[20px]">
             <Button
               variant="outline"
-              className="hover:bg-black h-[48px] text-[18px] hover:text-white bg-[#FF5900] text-white">
+              className="hover:bg-black h-[48px] text-[18px] hover:text-white bg-[#FF5900] text-white"  onClick={()=>showRegPage()}>
+              
               Become a Tutor Now!
             </Button>
 
@@ -393,7 +425,7 @@ export default function home() {
           </span>
         </div>
       </main>
-      <main className="flex md:flex-row bg-[#F6F6F6]  py-[24px] items-center  flex-col-reverse lg:px-[100px] px-[24px] pb-[100px] justify-center gap-[56px]">
+      <main className="flex md:flex-row bg-[#F6F6F6]  py-[24px] items-center  flex-col lg:px-[100px] px-[24px] pb-[100px] justify-center gap-[56px]">
         <div className="md:w-[719px]  flex flex-col gap-[16px] md:h-auto">
           <h2 className="font-semibold text-[40px]">Sponsor A Candidate</h2>
           <span className="flex flex-col gap-[24px] rounded-[8px] bg-[#3E414A] p-[24px] text-white">
@@ -450,13 +482,14 @@ export default function home() {
               className="hover:bg-[#3E414A] h-[48px] w-[305px] text-[18px] hover:text-white
   bg-[#FF5900] text-white"
             >
-              Sponsor A Student Today!
+           <Link href="/sponsor">Sponsor A Student Today!</Link>
+              
             </Button>
           </span>
         </div>
 
         <div className="w-[313px]  h-[600.12px] ">
-          <Image src={Frame7} alt="" layout="responsive" />
+          <Image src={sponsor} alt="" layout="responsive" />
         </div>
       </main>
     </>

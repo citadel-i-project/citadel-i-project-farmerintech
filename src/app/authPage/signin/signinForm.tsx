@@ -1,34 +1,95 @@
 "use client";
+
 import Image from "next/image";
-import { Eye, EyeOff, ChevronsRight } from "lucide-react";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState } from "react";
+import { Eye, EyeOff, ChevronsRight, Loader2 } from "lucide-react";
 import googleLogo from "@/app/assets/google.svg";
+import { useRouter, usePathname } from "next/navigation";
+import { useUser } from "@/app/context/reducer";
 
-interface SignInFormProps {
-  email: string;
-  password: string;
-  handleInput: (event: ChangeEvent<HTMLInputElement>) => void;
-  handleForm: (event: FormEvent<HTMLFormElement>) => void;
-  handleCheck: (event: ChangeEvent<HTMLInputElement>) => void;
-  message?: string;
-  error?: string;
-  isChecked: boolean;
-}
-
-export const SignInForm = ({
-  email,
-  password,
-  handleInput,
-  handleForm,
-  handleCheck,
-  message,
-  error,
-  isChecked,
-}: SignInFormProps) => {
+export const SignInForm = () => {
+   const router = useRouter();
+  const pathname = usePathname();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const { dispatch } = useUser();
+  const [isChecked, setIsChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(e.target.checked);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+    setIsLoading(true);
+
+    const { email, password } = formData;
+
+    if (!email.trim()) {
+      setIsLoading(false);
+      return setError("Email is required");
+    }
+    if (password.length < 8) {
+      setIsLoading(false);
+      return setError("Password must be at least 8 characters");
+    }
+
+    try {
+      const res = await fetch("https://api.citadel-i.com.ng/api/v1/user/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setMessage(typeof result.message === "string" ? result.message : "Login successful");
+        setFormData({ email: "", password: "" });
+        setIsChecked(false);
+        // Redirect or save token if needed
+        router.push(pathname);
+        dispatch({
+    type: 'LOGIN',
+    payload: {
+      email:result.user.email,
+      firstName:result.user.firstName,
+      lastName:result.user.lastName,
+      token:result.user.token,
+      role:result.user.role,
+      subjects:[],
+      examMode:''
+    },
+  });
+      } else {
+        const errorMsg =
+          typeof result.message === "string"
+            ? result.message
+            : "Invalid credentials or server error.";
+        setError(errorMsg);
+      }
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError("Unable to connect to server. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <form className="space-y-3" onSubmit={handleForm}>
+    <form className="space-y-3" onSubmit={handleSubmit}>
       {message && <p className="text-green-500 text-sm">{message}</p>}
 
       <label className="text-sm">Email Address</label>
@@ -36,7 +97,7 @@ export const SignInForm = ({
         type="email"
         className="w-full p-2 border outline-none rounded-lg text-sm border-gray-500 focus:border-black"
         placeholder="Email Address"
-        value={email}
+        value={formData.email}
         name="email"
         onChange={handleInput}
       />
@@ -47,7 +108,7 @@ export const SignInForm = ({
           type={showPassword ? "text" : "password"}
           className="w-full p-2 border outline-none rounded-lg text-sm border-gray-500 focus:border-black"
           placeholder="Password"
-          value={password}
+          value={formData.password}
           name="password"
           onChange={handleInput}
         />
@@ -60,31 +121,39 @@ export const SignInForm = ({
         </button>
       </div>
 
-      <div className="flex items-center text-xs">
-        <input
-          type="checkbox"
-          className="mr-2 bg-gray-300 rounded"
-          onChange={handleCheck}
-          checked={isChecked}
-        />
-        <div className="flex justify-between w-full">
-          <p>Remember me</p>
-          <p>
-            <a href="#" className="text-orange-500">
-              Forgot password?
-            </a>
-          </p>
-        </div>
+      <div className="flex items-center text-xs justify-between">
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            className="mr-2 bg-gray-300 rounded"
+            onChange={handleCheck}
+            checked={isChecked}
+          />
+          Remember me
+        </label>
+        <a href="#" className="text-orange-500">
+          Forgot password?
+        </a>
       </div>
 
       <button
+        type="submit"
         className={`w-full ${
           isChecked ? "bg-orange-500" : "bg-gray-400"
         } text-white py-2 rounded-lg text-sm flex gap-3 items-center justify-center`}
-        disabled={!isChecked}
+        disabled={!isChecked || isLoading}
       >
-        Login
-        <ChevronsRight size={24} className="text-white" />
+        {isLoading ? (
+          <>
+            <Loader2 size={18} className="animate-spin" />
+            Logging in...
+          </>
+        ) : (
+          <>
+            Login
+            <ChevronsRight size={20} />
+          </>
+        )}
       </button>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -96,7 +165,10 @@ export const SignInForm = ({
       </div>
 
       <div className="flex items-center justify-center w-full">
-        <button className="w-full rounded-[8px] border border-gray-300 py-2 flex items-center justify-center text-sm">
+        <button
+          type="button"
+          className="w-full rounded-[8px] border border-gray-300 py-2 flex items-center justify-center text-sm"
+        >
           <Image
             src={googleLogo}
             alt="Google"
@@ -109,7 +181,7 @@ export const SignInForm = ({
       </div>
 
       <p className="text-center text-xs text-gray-500 mt-2">
-        Don't have an account?{" "}
+        Don’t have an account?{" "}
         <a href="/signup" className="text-orange-500">
           Register now!
         </a>

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from '@/components/ui/textarea'
 import { useParams } from 'next/navigation'
 import { subjects } from "@/app/(navigation)/exam_preparation/page"
-  
+
 export default function page() {
   const params = useParams();
     let subject = params.subject as string;
@@ -29,7 +29,7 @@ export default function page() {
         setError("");
     
         try {
-          const response = await fetch(`https://citadel-i-project.onrender.com/api/v1/past_question/view_answer/${questionId}`, {
+          const response = await fetch(`https://api.citadel-i.com.ng/api/v1/past_question/view_answer/${questionId}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -80,25 +80,25 @@ export default function page() {
             <div className="flex flex-col gap-2.5">
               {data ? (
                 <>
-                  <span className="flex items-center gap-2" key={data.id}>
-                    <p
+                  <div className="flex items-center gap-2" key={data.id}>
+                    {/* <p
                       className="h-[24px] w-[24px] bg-[#FFCCB0] text-[10px]
     border border-[#FF5900] text-[#FF5900] rounded-full flex items-center justify-center"
                     >
                       {data.id}
-                    </p>
+                    </p> */}
                     <p key={data.id} className="font-semibold text-[18px]">
                       {data?.question}
                     </p>
-                  </span>
+                  </div>
                   <span className="">
-                    <p className="text-[18px]"> {data?.optionA} </p>
+                    <p className="text-[18px]"> A. {data?.optionA} </p>
 
-                    <p className="text-[18px]"> {data?.optionB}</p>
+                    <p className="text-[18px]"> B. {data?.optionB}</p>
 
-                    <p className="text-[18px]"> {data?.optionC}</p>
+                    <p className="text-[18px]"> C. {data?.optionC}</p>
 
-                    <p className="text-[18px]"> {data?.optionD}</p>
+                    <p className="text-[18px]"> D. {data?.optionD}</p>
                   </span>
                   <span className="flex flex-col w-[105px]">
                     <Button

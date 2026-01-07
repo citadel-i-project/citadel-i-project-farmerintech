@@ -2,6 +2,9 @@
 import { useState, useEffect, ChangeEvent } from "react";
 import Link from "next/link"
 import { useParams } from "next/navigation"    
+import Image from 'next/image'
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+
 import {
     Select,
     SelectContent,
@@ -15,22 +18,26 @@ const menuItems =[
         {
             id:0,
             name:"KS1",
-            years:["Year1", "Year2"]
+            years:["Year1", "Year2"],
+            uri:"KS1"
         },
         {
             id:1,
             name:"KS2",
-            years:["Year1", "Year2", "Year3", "Year4", "Year5", "Year6"], 
+            years:[ "Year3", "Year4", "Year5", "Year6"], 
+            uri:"KS2"
         },
         {
             id:2,
             name:"KS3",
             years:["Year1", "Year2", "Year3", "Year4", "Year5", "Year6"], 
+            uri:"KS3"
         },
         {
             id:3,
-            name:"SSCE_GCE",
-            years:[], 
+            name:"SSCE/GSCE",
+            years:[],
+            uri:"SSCE/GSCE"
         },
     ]
 const Terms=[
@@ -68,63 +75,61 @@ export default function Myclass (){
   const formatYear = (index: number): string => {
     return years[index] || "year1";
   };
+const [page, setPage] = useState<number>(1); // current page
+const [totalPages, setTotalPages] = useState<number>(1); // total pages from backend
 
-  useEffect(() => {
-    if (!params.class) return;
-    setLoading(true);
-    const theClass = params.class as string;
-    const year = formatYear(yearIndex);
+useEffect(() => {
+  if (!params.class) return;
+  setLoading(true);
+  const theClass = params.class as string;
+  const year = formatYear(yearIndex);
 
-    const body = {
-      class: theClass,
-      year,
-      term,
-    };
-    console.log(body);
-    const fetchClassNote = async () => {
-      setError("");
-      setData(null);
+  const body = {
+    class: decodeURIComponent(theClass),
+    year,
+    term,
+  };
 
-      try {
-        const res = await fetch(
-          `https://citadel-i-project.onrender.com/api/v1/note/get_class_note`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          }
-        );
+  const fetchClassNote = async () => {
+    setError("");
+    setData(null);
 
-        const result = await res.json();
-
-        if (!res.ok) {
-          setError(result.message);
-          throw new Error(result.message || "Failed to fetch class material");
+    try {
+      const res = await fetch(
+        `https://api.citadel-i.com.ng/api/v1/note/get_class_note?page=${page}&limit=6`, // <-- added page & limit
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
         }
-        setData(result.data);
-        console.log("Fetched:", result);
-      } catch (err: any) {
-        console.error(err);
-        setError(err.message || "Error connecting to server");
-      } finally {
-        setLoading(false);
-      }
-    };
+      );
 
-    // Determine classIndex on mount
-    const matchIndex = menuItems.findIndex((item) => item.name === theClass);
-    // const matchedSubject = 
-    if (matchIndex !== -1) setClassIndex(matchIndex);
-    fetchClassNote();
-  }, [params.class, yearIndex, term]);
+      const result = await res.json();
+
+      if (!res.ok) {
+        setError(result.message);
+        throw new Error(result.message || "Failed to fetch class material");
+      }
+
+      setData(result.data);
+      setTotalPages(result.pagination?.totalPages || 1); // <-- set total pages from backend
+      console.log("Fetched:", result);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Error connecting to server");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchClassNote();
+}, [params.class, yearIndex, term, page]); // <-- added page as dependency
 
   const [form, setForm] = useState<any>({
     subject: "",
     term,
     year: "year1",
-    class: theClass,
+    class: decodeURIComponent(theClass),
   });
 
   const handleSelectYear = (value: string) => {
@@ -145,6 +150,9 @@ export default function Myclass (){
       term: value,
     });
   };
+
+ 
+
 
   useEffect(() => {
     setTerm(form.term);
@@ -200,6 +208,7 @@ export default function Myclass (){
     term: string;
     id: number;
     filePath: any;
+    imagePath:any
   };
     return(
         <>
@@ -264,7 +273,7 @@ export default function Myclass (){
                         <li className="cursor-pointer" onClick={()=>{setClassIndex(menu.id)}} key={menu.id}>
                             <div >
                                 <div className={`flex justify-between items-center ${classIndex == menu.id ? "bg-[#F6C354]":''} w-[132px] px-[8px] py-[12px]`} >
-                                    <Link href={`/classes/${menu.name}`}>{menu.name}</Link>
+                                    <Link href={`/classes/${menu.uri}`}>{menu.name}</Link>
                                 </div>                      
                                  <ul  className={` ${classIndex == menu.id ? 'block': 'hidden' }`}>
                                     {menu.years.map((year)=>(
@@ -288,7 +297,7 @@ export default function Myclass (){
                     <li className="cursor-pointer z-[80px]  " onClick={()=>{setClassIndex(menu.id)}} key={menu.id}>
                         <div className=''>
                             <div className={`flex justify-between items-center  ${classIndex == menu.id ? "bg-[#F6C354]":'bg-white'} px-[8px] py-[12px] `} >
-                            <Link href={`/classes/${menu.name}`}>{menu.name}</Link>
+                            <Link href={`/classes/${menu.uri}`}>{menu.name}</Link>
                             </div>                      
                              <ul  className={` ${classIndex == menu.id ? 'block': 'hidden' }`}>
                                 {menu.years.map((year)=>(
@@ -302,7 +311,7 @@ export default function Myclass (){
             }
             <li className={`w-full px-[8px] py-[12px] bg-[#F6C354] flex items-center justify-between ${!showMenu ? "block":"hidden"}`}>
                 
-                <span>{theClass}</span>
+                <span>{decodeURIComponent(theClass)}</span>
                 <span className="text-black"></span>
 
             </li>
@@ -347,26 +356,59 @@ export default function Myclass (){
                 {error}
             </p>
           )}
-            <div className="mt-[50px] md:mt-[0px]  grid md:grid-cols-2 lg:grid-cols-4 gap-[32px] py-[32px]  ">
+         <div className="mt-[50px] md:mt-[0px] grid md:grid-cols-2 lg:grid-cols-3 gap-[32px] py-[32px]">
+  {!loading && data?.length > 0 &&
+    data.map((material: materialItem, index: number) => (
+      <div className="w-full h-[177px]" key={index}>
 
-          {!loading && data?.length > 0 && (
-            data.map((material: materialItem, index: number) => (
-               <div className="w-full h-[177px]" key={index}>
-                 <div className="bg-[#F3F3F3] w-full h-[137px]">
-                   <div className="flex items-center justify-center py-[35px] px-[26px]">
-                    {/* You could add an icon or image here */}
-                  </div>
-               </div>
-             <div className="bg-[#3E414A] h-[40px] w-full text-center text-white flex items-center justify-center">
-           <Link
-                  href={`/classes/${theClass}/${subjects.find(sub => sub.name === material.subject)?.url}?id=${material.id}`}>
-                  {material.subject}
-            </Link>
-          </div>
-       </div>
-       ))
-       )}
-    </div>
+        {/* IMAGE AREA */}
+        <div className="relative bg-[#F3F3F3] w-full h-[137px] overflow-hidden pb-2 px-2">
+          <Image
+            src={material.imagePath}
+            alt={material.subject}
+            fill
+            sizes="(max-width: 768px) 100vw, 100vw"
+            className="object-cover"
+          />
+        </div>
+
+        {/* FOOTER */}
+        <div className="bg-[#3E414A] h-[40px] w-full text-center text-white flex items-center justify-center">
+          <Link
+            href={`/classes/${theClass}/${subjects.find(sub => sub.name === material.subject)?.url}?id=${material.id}`}
+          >
+            {material.subject}
+          </Link>
+        </div>
+
+      </div>
+      
+    ))}
+   
+</div>
+
+<div className="flex justify-center items-center gap-4 mt-8 mb-8">
+  <button
+    className={`px-4 py-2 rounded ${page === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-orange-500 text-white"}`}
+    disabled={page === 1}
+    onClick={() => setPage(page - 1)}
+  >
+    Previous
+  </button>
+
+  <span className="text-lg font-semibold">
+    Page {page} of {totalPages}
+  </span>
+
+  <button
+    className={`px-4 py-2 rounded ${page === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-orange-500 text-white"}`}
+    disabled={page === totalPages}
+    onClick={() => setPage(page + 1)}
+  >
+    Next
+  </button>
+</div>
+
             <div className="md:flex-row flex-col flex flex-start gap-[32px] md:items-center">
                     <p className="font-[400] text-[18px] text-xl">Need help with understanding your subjects?</p>
                     <button className="text-white rounded-[8px] w-[200px] px-[16px] py-[8px]  bg-[#FF5900]">

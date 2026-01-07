@@ -8,7 +8,6 @@ import Maths from '@/app/assets/maths.png'
 import { FiPhoneOutgoing } from 'react-icons/fi'
 import EXamt from '@/app/assets/examtuto.png'
 import image from "@/app/assets/imageholder.png"
-
 import {
   Accordion,
   AccordionContent,

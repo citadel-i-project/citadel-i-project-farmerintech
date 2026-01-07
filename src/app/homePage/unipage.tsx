@@ -103,7 +103,7 @@ export default function unipage() {
   {
     Schools.map((school)=>(
         <div className={`rounded-none text-[12px]  lg:text-[16px] p-[3px] lg:p-[10px] text-white ${school.bgColor1}`}>
-             <Link href='/' className={`flex   items-center justify-center lg:text-[12px] xl:text-[20px] text-[12px]  lg:px-[4px] ${school.bgColor2}`}>
+             <Link href='/admission_info' className={`flex   items-center justify-center lg:text-[12px] xl:text-[20px] text-[12px]  lg:px-[4px] ${school.bgColor2}`}>
                    {school.name}
              </Link>
         </div>

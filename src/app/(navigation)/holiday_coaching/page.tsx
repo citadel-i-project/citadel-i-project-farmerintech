@@ -10,6 +10,7 @@ import Image from 'next/image'
 import stem from "@/app/assets/stem.png"
 import graphics from "@/app/assets/graphic.png"
 import coding from "@/app/assets/coding.png"
+
 export default function Coaching (){
     return(
         <>

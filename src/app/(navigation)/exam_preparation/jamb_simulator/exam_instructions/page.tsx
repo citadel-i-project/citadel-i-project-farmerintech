@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { FaChevronDown, FaChevronLeft, FaChevronRight, FaChevronUp, FaUser } from 'react-icons/fa';
 import { useUser } from '@/app/context/reducer';
 
+
 export default function Page() {
   const {state} = useUser()
 

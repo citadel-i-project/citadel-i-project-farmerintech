@@ -1,5 +1,5 @@
 {
-  "name": "citadel-i-project",
+  "name": "citadel-i",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -22,7 +22,7 @@
     "install": "^0.13.0",
     "lucide-react": "^0.476.0",
     "mammoth": "^1.9.0",
-    "next": "15.2.0",
+     "next": "15.3.6",
     "react": "^19.0.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^19.0.0",

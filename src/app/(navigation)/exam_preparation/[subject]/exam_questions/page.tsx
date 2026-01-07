@@ -6,7 +6,6 @@ import { ChefHatIcon } from 'lucide-react'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useParams } from 'next/navigation'; // ✅ Use this instead
-
 import {
     Select,
     SelectContent,
@@ -21,6 +20,7 @@ import {
     optionB:string,
     optionC:string,
     optionD:string,
+    answer:string,
     optE:string,
     subject:string,
     id:number
@@ -28,6 +28,9 @@ import {
   import { useSearchParams, useRouter } from 'next/navigation';
 import { subjects } from '../../page'
 import {FaChevronRight} from "react-icons/fa"
+
+
+
 export default function Page() {
   const params = useParams();
   let subject = params.subject as string; // if TypeScript complains
@@ -38,6 +41,7 @@ export default function Page() {
   const [totalPage, setTotalPage] = useState<number>(1);
   const [loading, setIsLoading] = useState<boolean>(true);
   const matched = subjects.find((subj) => subj.url === subject);
+const [showAnswer, setShowAnswer] = useState<number | null>(null);
 
   const [formData, setFormData] = useState<any>({
     subject: `${matched?.name}`,
@@ -68,7 +72,7 @@ export default function Page() {
 
     try {
       const res = await fetch(
-        `https://citadel-i-project.onrender.com/api/v1/past_question/get_questions?page=${currentPage}&offset=${offset}`,
+        `https://api.citadel-i.com.ng/api/v1/past_question/get_questions?page=${currentPage}&offset=${offset}`,
         {
           method: "POST",
           headers: {
@@ -230,52 +234,75 @@ export default function Page() {
                   {error}
                 </p>
               )}
-              {!loading &&
-                data?.length > 0 &&
-                !error &&
-                data?.map((pq: PQItem, index: number) => (
-                  <>
-                    <span className="flex items-center gap-2" key={index}>
-                      <p
-                        className="h-[24px] w-[24px] bg-[#FFCCB0] text-[10px]
-    border border-[#FF5900] text-[#FF5900] rounded-full flex items-center justify-center"
-                      >
-                        {index + 1}
-                      </p>
-                      <p key={index} className="font-semibold text-[18px]">
-                        {pq.question}
-                      </p>
-                    </span>
-                    <span className="">
-                      <p className="text-[18px]">{pq.optionA} </p>
+             {!loading &&
+  data?.length > 0 &&
+  !error &&
+  data.map((pq: PQItem, index: number) => (
+    <div key={pq.id} className="space-y-3">
+      {/* Question */}
+     <div className="flex items-start gap-5 flex-col md:flex-row">
+  <p
+    className="h-[25px] w-[25px] flex-shrink-0 bg-[#FFCCB0] text-[10px]
+    border border-[#FF5900] text-[#FF5900] rounded-full
+    flex items-center justify-center"
+  >
+    {index + 1}
+  </p>
 
-                      <p className="text-[18px]"> {pq.optionB}</p>
+  <p className=" text-[18px] leading-relaxed">
+    {pq.question}
+  </p>
+</div>
 
-                      <p className="text-[18px]"> {pq.optionC}</p>
 
-                      <p className="text-[18px]"> {pq.optionD}</p>
-                    </span>
-                    <span className="flex justify-between w-[261px]">
-                      <Button
-                        variant="outline"
-                        className="border border-[#FF5900] text-[#FF5900]"
-                      >
-                        <Link
-                          href={`/exam_preparation/${matched?.url}/exam_questions/${pq.id}/view_answer`}
-                        >
-                          {" "}
-                          View Answer
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="border border-[#FF5900] text-[#FF5900]"
-                      >
-                        <ChefHatIcon /> Save Question
-                      </Button>
-                    </span>
-                  </>
-                ))}
+      {/* Options */}
+      <div className="px-3">
+        <p className="text-[18px]">A. {pq.optionA}</p>
+        <p className="text-[18px]">B. {pq.optionB}</p>
+        <p className="text-[18px]">C. {pq.optionC}</p>
+        <p className="text-[18px]">D. {pq.optionD}</p>
+      </div>
+
+      {/* Correct Answer (Hidden by default) */}
+      {showAnswer === pq.id && (
+        <p className="text-green-600 font-semibold text-[16px]">
+          ✅ Correct Answer: {pq.answer}
+        </p>
+      )}
+
+      {/* Actions */}
+      <div className="flex justify-between items-center flex-col md:flex-row gap-3 w-full md:w-[261px]">
+        <Button
+          variant="outline"
+          className="border border-[#FF5900] text-[#FF5900] w-full"
+          onClick={() =>
+            setShowAnswer(showAnswer === pq.id ? null : pq.id)
+          }
+        >
+          {showAnswer === pq.id ? "Hide Answer" : "View Answer"}
+        </Button>
+
+        <Button
+          variant="outline"
+          className="border border-[#FF5900] text-[#FF5900] w-full"
+        >
+           <Link
+    href={`/exam_preparation/${matched?.url}/exam_questions/${pq.id}/view_answer`}
+  >
+    View Explanation
+  </Link>
+        </Button>
+
+        <Button
+          variant="outline"
+          className="border border-[#FF5900] text-[#FF5900] w-full"
+        >
+          <ChefHatIcon /> Save Question
+        </Button>
+      </div>
+    </div>
+  ))}
+
             </div>
           </article>
 

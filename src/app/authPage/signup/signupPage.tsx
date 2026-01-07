@@ -1,39 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { X } from "lucide-react";
 import { SignUpForm } from "./signupForm";
 import { AuthPage } from "../authRightPage";
-import { handleForm as handleSignupForm } from "@/app/utils/authApi";
-import { X } from "lucide-react";
-import { FormDataType } from "@/app/utils/authApi"; // import the interface
-
 interface SignUpPageProps {
   setShowReg: (show: boolean) => void;
 }
 
+
+
 export default function SignUpPage({ setShowReg }: SignUpPageProps) {
-  const [formData, setFormData] = useState<FormDataType>({
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-  });
-  const [error, setError] = useState<string | undefined>();
-  const [message, setMessage] = useState<string | undefined>();
-  const [data, setData] = useState<any>();
-  const [isChecked, setIsChecked] = useState<boolean>(false);
-
-  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsChecked(event.target.checked);
-  };
-
   return (
     <section className="flex items-start md:items-center justify-center h-screen">
       <div className="md:flex w-[311px] md:w-full md:max-w-4xl h-[60vh] md:h-[85vh] md:rounded-lg shadow md:overflow-hidden">
@@ -50,30 +26,7 @@ export default function SignUpPage({ setShowReg }: SignUpPageProps) {
           <p className="text-gray-500 text-xs text-left mb-3">
             Let’s get you started by first creating your account
           </p>
-
-          <SignUpForm
-             email={formData.email}
-             password={formData.password}
-             firstName={formData.firstName || ""}
-             lastName={formData.lastName || ""}
-            handleInput={handleInput}
-            handleForm={(e) =>
-              handleSignupForm(
-                e,
-                "https://citadel-i-project.onrender.com/api/v1/user/auth/signup",
-                formData,
-                setError,
-                setMessage,
-                setData,
-                setFormData,
-                true
-              )
-            }
-            handleCheck={handleCheck}
-            message={message}
-            error={error}
-            isChecked={isChecked}
-          />
+          <SignUpForm />
         </div>
       </div>
     </section>

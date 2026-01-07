@@ -21,17 +21,15 @@ export const Hero = () =>{
                    Success!
                 </h2>
                 <p className="text-[18px] lg:max-w-[547px] flex-col flex gap-[12px]">
-                    Access high-quality study materials, video lessons, and expert guidance
-                    to boost your academic success. Prepare fo exams, improve your skills, and take control of
-                    your learning-anytime, anywhere. 
+                    Study smarter with expert tutors, quality materials, and engaging lessons—anytime, anywhere.
                     <span className="text-[18px] font-[600]">For Students, Teachers , and Parents</span>
                 </p>
                 <div className="flex gap-[20px] lg:gap-10 items-center ">
                     <button className="bg-[#FF5900] hover:bg-[#344054] hover:text-white text-[16px] px-[16px] py-[8px] rounded-[8px] text-white">
-                        <Link href='/'> Start Learning </Link> 
+                        <Link href='/classes/KS1'> Start Learning </Link> 
                     </button> 
                     <button className="border-[1px] text-[16px] hover:text-white hover:bg-black bg-transparent px-[16px] py-[8px] rounded-[8px] text-black border-black " >
-                        <Link href='/'>  Book a Tutor  </Link> 
+                        <Link href='/bookings'>  Book a Tutor  </Link> 
                     </button>
                 </div>
                 </section>

@@ -15,6 +15,8 @@ import {
   } from "@/components/ui/select"
 import { useUser } from '@/app/context/reducer';
 import { useRouter } from 'next/navigation';
+import { toggle } from '@/lib/utils';
+import SignInPage from '@/app/authPage/signin/signinPage';
 
 export default function Page() {
   const [checkedSubjects, setCheckedSubjects] = useState<string[]>(['English Language']); // always selected
@@ -32,6 +34,7 @@ export default function Page() {
           alert('You can only select four subjects (English + 3 others)');
           return prev;
         }
+        
         return [...prev, subject];
       }
     });
@@ -41,32 +44,49 @@ const [mode, setMode] = useState('')
   const handleValuChange =(value:string)=>{
     setMode(value)
   }
+  
   const router = useRouter()
-
+              const [showLogin, setShowLogin] = useState(false)
+     
+    const showLoginPage = () =>{
+    toggle(setShowLogin, showLogin); // then toggle the registration page
+                 }           
 const handleNavigate = () =>{
   const email =''
   const firstName=''
   const lastName =''
   const token =''
   const role=''
+    if (checkedSubjects.length !== 4) {
+          alert('Please select up to four subjects (English + 3 others)');
+          return checkedSubjects;
+        }
   dispatch({
            type: 'CBT',
            payload: {
-             email,
-             firstName,
-             lastName,
-             token,
-             role,
+             email:state.email,
+             firstName:state.firstName,
+             lastName:state.lastName,
+             token:state.token,
+             role:state.role,
              subjects:checkedSubjects,
              examMode:mode
            }
          });
  console.log(state)
          // Redirect to dashboard after login
-         router.push('/exam_preparation/jamb_simulator/exam_instructions')
-}
+        state.firstName!== null && state.firstName!=='' 
+        ? router.push('/exam_preparation/jamb_simulator/exam_instructions'):
+        showLoginPage()
+    }
+
   return (
     <>
+     {showLogin  && 
+          <div className='md:fixed absolute p-10 md:p-0 inset-0 bg-[#0000008F] bg-opacity-50  z-40'>
+            <SignInPage setShowLogin={setShowLogin}/>
+          </div>
+          }    
       <section className="flex flex-col md:flex-row gap-[12px] justify-between bg-[#F3F3F3] xl:px-[100px] px-[16px] py-[24px]">
         <div>
           <h2 className="text-[32px] font-[700]">JAMB SIMULATOR</h2>

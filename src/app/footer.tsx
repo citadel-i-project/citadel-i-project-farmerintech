@@ -22,20 +22,18 @@ export default function footer() {
             <span className="">
               <p className="text-[14px] text-[#F1A500]">Address</p>
               <p className="text-[14px] text-white">
-                20, Odofin street, Ijora lagos.
-              </p>
+27 Oyegbemi st, Ijora-Oloye, Ijora, Lagos, Nigeria.              </p>
             </span>
 
             <span className="">
               <p className="text-[14px] text-[#F1A500]">Phone Number</p>
-              <p className="text-[14px] text-white">08069122739</p>
+              <p className="text-[14px] text-white">+2348062817634, +2348174532615</p>
             </span>
 
             <span className="">
               <p className="text-[14px] text-[#F1A500]">Email</p>
               <p className="text-[14px] text-white">
-                ayindebashir861@gmail.com
-              </p>
+Info@citadelprojects.com              </p>
             </span>
           </aside>
 
@@ -54,20 +52,20 @@ export default function footer() {
             </ul>
           </aside>
 
-          <aside className="flex flex-col gap-[16px] flex-1">
+          <aside className="flex flex-col gap-[16px] md:flex-1 w-full">
             <p className="text-white font-bold text-[16px]">
               Send Us a Message
             </p>
-            <Input placeholder="Name" className=""/>
-            <Textarea placeholder="Your Message" className="" />
+            <Input placeholder="Name" className="w-full md:w-[300px]"/>
+            <Textarea placeholder="Your Message" className="w-full md:w-[300px]" />
             <Button className="bg-[#FF5900] text-white">Submit</Button>
           </aside>
         </div>
-        <div className="md:flex md:justify-between text-center mt-8">
-          <p className="text-white text-[14px]">
+        <div className="flex md:flex-row flex-col-reverse gap-[24px] md:gap-0 md:justify-between  mt-8">
+          <p className="text-white text-[14px] text-center">
             Copyright &copy; 2025 Citadel-i-Projects
           </p>
-          <span className="text-white text-[14px] justify-center flex gap-[32px]">
+          <span className="text-white text-[14px] justify-between md:justify-center flex gap-[32px]">
             <p className="">Terms and Condition</p>
             <p className="">Privacy Policy</p>
           </span>
