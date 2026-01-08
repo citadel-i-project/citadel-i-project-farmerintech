@@ -5,7 +5,7 @@ import chat from "@/app/assets/chat.svg"
 import Image from "next/image";
 import { Beneficiaries } from "@/app/components/beneficiaries";
 import partner from "@/app/assets/partner.jpg"
-
+import Link from "next/link";
 export default function Counselling (){
      
     return(
@@ -77,7 +77,7 @@ export default function Counselling (){
                 
             </div>
             <button className="bg-[#FF5900] text-white px-[24px] py-[12px] flex gap-[8px] w-full md:w-[426px] rounded-[8px]">
-            Book a Free Counselling Session Today!
+           <Link href='/counselling' >    Book a Free Counselling Session Today!</Link>
                 <span>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6 17L11 12L6 7M13 17L18 12L13 7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -92,7 +92,7 @@ export default function Counselling (){
             <div className="lg:w-[462px] w-full h-[104px] gap-[32px] p-[16px] rounded-[9px] bg-[#F6C354]">
                 <p className="font-[600]">Your giving as much as  $50 can keep hope alive for that student who desires to sit for UTME/GCE/IGCSE</p>
             </div>
-            <div className="font-[600] text-[#0F0F0F] text-[24] flex flex-col gap-[24px]">
+            <div className="font-[600] text-[#0F0F0F] text-[24px] flex flex-col gap-[24px]">
                 <h4>You can also have a quick chat with us on whatsapp to make enquiries</h4>
             </div>
             <div className="md:w-[288px] md:h-[208px] w-full h-full flex justify-center items-center">

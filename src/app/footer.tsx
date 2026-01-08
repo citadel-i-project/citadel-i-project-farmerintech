@@ -65,6 +65,7 @@ Info@citadelprojects.com              </p>
           <p className="text-white text-[14px] text-center">
             Copyright &copy; 2025 Citadel-i-Projects
           </p>
+          <p className="text-white">Citagraphx</p>
           <span className="text-white text-[14px] justify-between md:justify-center flex gap-[32px]">
             <p className="">Terms and Condition</p>
             <p className="">Privacy Policy</p>
