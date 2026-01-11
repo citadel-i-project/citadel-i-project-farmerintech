@@ -14,6 +14,7 @@ import SignUpPage from "./authPage/signup/signupPage";
 import SignInPage from "./authPage/signin/signinPage";
 import { useUser } from "./context/reducer";
 import { FaUser, FaUserCircle } from "react-icons/fa";
+import { useAuthStore } from "./store/user";
 export default function Header() {
   // State to manage mobile menu visibility
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -42,6 +43,10 @@ export default function Header() {
     const navIndex = getCurrentNav(pathname);
     setCurrentNav(navIndex);
   }, [pathname]); 
+
+  const user = useAuthStore((s) => s.user);
+
+
   return (
     <>
  {showReg && (
@@ -55,7 +60,7 @@ export default function Header() {
           <SignInPage setShowLogin={setShowLogin} />
         </div>
       )}
-    <header className=" flex  w-[100%] bg-[#FEF6E6] md:bg-[#FFFFFF]" >
+    <header className=" flex  w-[100%] bg-[#FEF6E6] md:bg-[#FFFFFF] z-100" >
       <nav className=" p-[24px] md:p-0  flex justify-between w-[100%] ">
         {/* Logo */}
         <div className="flex md:hidden items-center">
@@ -105,12 +110,19 @@ export default function Header() {
                   </Label>
                 </span>
         
-       {state.isLoggedIn && state.firstName!==null ?
-                <div className=" py-10 flex gap-[12px] items-center">
-                 <p className="flex items-center justify-center w-[50px] h-[50px] rounded-full justify-center">   <FaUserCircle color="orange" size={20}/></p>
-                 <p>Hello, {state?.firstName  || ''} {state?.lastName || ""} 
-                 </p>
-                </div>
+      
+      {user ? (
+  <div className="py-10 flex gap-3 items-center">
+    {/* <div className="flex items-center justify-center w-[50px] h-[50px] rounded-full">
+      <FaUserCircle color="orange" size={20} />
+    </div> */}
+
+    <a 
+    href={user.role ==="student" ? "/student/dashboard" :"/teachers/dashboard"}
+    className="bg-[#FF5900] px-5 py-2 text-[16px] rounded-md text-white">Dashboard</a>
+  </div>
+      )
+      
        :
        <span className="flex items-center gap-[5px]">
         <Button className="bg-[#FF5900] w-[97px] h-[35px] text-[16px] text-white"  onClick={()=>{showRegPage()}}>
@@ -136,7 +148,7 @@ export default function Header() {
 
         {/* Classes Dropdown */}
         <li
-          className={`relative text-[16px] border-[#FF5900] font-normal flex items-center gap-[4px] hover:text-[#FF5900] hover ${
+          className={`relative text-[16px] border-[#FF5900] z-50 font-normal flex items-center gap-[4px] hover:text-[#FF5900] hover ${
             currentNav === 1 ? "text-[#FF5900] border-b-[3px]" : "text-black"
           }`}
           onMouseEnter={() => setIsClassesDropdownOpen(true)}
@@ -222,11 +234,11 @@ export default function Header() {
       </ul>
 
       {/* Right Section - Resources Dropdown, Sponsor, Search, Book a Tutor */}
-      <div className="flex justify-center gap-[10px] xl:gap-[24px] items-center">
-        <ul className="flex justify-center gap-[32px]">
+      <div className="flex justify-center gap-[10px] xl:gap-[24px] items-center z-20">
+        <ul className="flex justify-center gap-[32px] z-50">
           {/* Resources Dropdown */}
           <li
-          className={`relative text-[16px] border-[#FF5900] font-normal flex items-center gap-[4px] hover:text-[#FF5900] hover ${
+          className={`z-50 relative text-[16px] border-[#FF5900] font-normal flex items-center gap-[4px] hover:text-[#FF5900] hover ${
             currentNav === 5 ? "text-[#FF5900] border-b-[3px]" : "text-black"
           }`}
           onMouseEnter={() => setIsExamDropDown(true)}
@@ -390,13 +402,18 @@ export default function Header() {
          <Button className="block text-[#FF5900] text-[16px] bg-[#FFEEE6] hover:text-white">
           <Link href="/bookings" onClick={()=> toggleMobileMenu()}>Book a Tutor</Link>
         </Button>
-       { 
-              state.isLoggedIn  && state.firstName!==null ?
-                <div className=" py-10 flex gap-[12px] items-center">
-                 <p className="flex items-center justify-center w-[50px] h-[50px] rounded-full justify-center">   <FaUserCircle color="orange" size={20}/></p>
-                 <p>Hello, {state?.firstName || ''} {state?.lastName || ""} 
-                 </p>
-                </div>
+       
+                {user ? (
+  <div className="py-10 flex gap-3 items-center">
+    {/* <div className="flex items-center justify-center w-[50px] h-[50px] rounded-full">
+      <FaUserCircle color="orange" size={20} />
+    </div> */}
+
+    <a 
+    href={user.role ==="student" ? "/student/dashboard" :"/teachers/dashboard"}
+    className="bg-[#FF5900] px-5 py-2 text-[16px] rounded-md text-white">Dashboard</a>
+  </div>
+                )
          :
         <span className="py-10 flex justify-center flex-col items-center gap-[5px]">
           <Button className="bg-[#FF5900] text-[16px] text-white w-full" variant="outline" onClick={()=>{showRegPage()}}>Register</Button>

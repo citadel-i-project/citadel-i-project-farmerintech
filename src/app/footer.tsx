@@ -21,8 +21,7 @@ export default function footer() {
             </span>
             <span className="">
               <p className="text-[14px] text-[#F1A500]">Address</p>
-              <p className="text-[14px] text-white">
-27 Oyegbemi st, Ijora-Oloye, Ijora, Lagos, Nigeria.              </p>
+              <p className="text-[14px] text-white">27 Oyegbemi st, Ijora-Oloye, Ijora, Lagos, Nigeria.              </p>
             </span>
 
             <span className="">
@@ -32,8 +31,7 @@ export default function footer() {
 
             <span className="">
               <p className="text-[14px] text-[#F1A500]">Email</p>
-              <p className="text-[14px] text-white">
-Info@citadelprojects.com              </p>
+              <p className="text-[14px] text-white">citadelprojects7@gmail.com</p>
             </span>
           </aside>
 
@@ -67,8 +65,8 @@ Info@citadelprojects.com              </p>
           </p>
           <p className="text-white">Citagraphx</p>
           <span className="text-white text-[14px] justify-between md:justify-center flex gap-[32px]">
-            <p className="">Terms and Condition</p>
-            <p className="">Privacy Policy</p>
+            <a className="" href="/terms_conditions">Terms and Condition</a>
+            <a className="" href="/privacy_policy">Privacy Policy</a>
           </span>
         </div>
       </section>

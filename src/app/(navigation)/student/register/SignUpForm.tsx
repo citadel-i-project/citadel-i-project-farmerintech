@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRouter } from "next/navigation";
 
 const DISCIPLINES = ["Science", "Arts", "Commercial"];
 const QUALIFICATIONS = ["NCE", "B.Sc", "B.Ed", "M.Sc", "M.Ed", "PhD"];
@@ -59,6 +58,7 @@ export function SignUpForm() {
   const [discipline, setDiscipline] = useState("");
   const [qualification, setQualification] = useState("");
   const [subjects, setSubjects] = useState<string[]>([]);
+
   const [classGroup, setClassGroup] = useState<string>("");
   const [classYears, setClassYears] = useState<string[]>([]);
 
@@ -77,7 +77,6 @@ export function SignUpForm() {
     );
   };
 
-  const router = useRouter()
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -94,13 +93,13 @@ export function SignUpForm() {
 
     try {
       const res = await fetch(
-        `https://api.citadel-i.com.ng/api/v1/user/auth/teachers/signUp`,
+        `https://api.citadel-i.com.ng/api/v1/user/auth/tecahers/signUp`,
         {
           method: "POST",
           body: formData,
         }
       );
-      console.log(formData)
+
       const data = await res.json();
 
       if (!res.ok) {
@@ -114,16 +113,11 @@ export function SignUpForm() {
       setClassYears([]);
       setClassGroup("");
       setPassport(null);
-      router.push("/teachers/login");
     } catch {
       alert("Something went wrong");
     } finally {
       setLoading(false);
     }
-  };
-  const [isChecked, setIsChecked] = useState<any>()
- const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsChecked(e.target.checked);
   };
 
   return (
@@ -216,15 +210,9 @@ export function SignUpForm() {
                 </SelectContent>
               </Select>
             </div>
-            
-          </div>
-           <div className="grid grid-cols-1">
-            <Label>Course of Study</Label>
-            <Input name="courseOfStudy" type="text" required />
           </div>
         </div>
-        
-     
+
         {/* ================= RIGHT ================= */}
         <div className="space-y-4">
           <div>
@@ -326,33 +314,13 @@ export function SignUpForm() {
           </div>
         </div>
       </div>
- <div className="flex items-center text-xs">
-        <input
-          type="checkbox"
-          className="mr-2"
-          checked={isChecked}
-          onChange={handleCheck}
-        />
-        <span>
-          I agree to the citadel-i-project{" "}
-          <a href="/terms_conditions" className="text-orange-500">
-            Terms & Conditions
-          </a> and <a href="/privacy_policy"  className="text-orange-500">Privacy Policy</a>
-        </span>
-      </div>
+
       <Button
-        disabled={loading || !isChecked}
+        disabled={loading}
         className="w-full bg-orange-500 hover:bg-orange-600"
       >
         {loading ? "Submitting..." : "Create Teacher Account"}
       </Button>
-       <p className="text-center text-xs text-gray-500 ">
-        Already have an account?{" "}
-        <a href="/teachers/login" className="text-orange-500">
-          Log in
-        </a>
-      </p>
     </form>
-
   );
 }

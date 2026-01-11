@@ -1,217 +1,209 @@
-'use client';
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { FiPhoneOutgoing } from 'react-icons/fi';
-import image from '@/app/assets/imageholder.png';
-import { Schools, subjects } from '../page';
+"use client";
+
+import React, { ChangeEvent, useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { FiPhoneOutgoing } from "react-icons/fi";
+import image from "@/app/assets/imageholder.png";
+import { Schools, subjects } from "../page";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
-import { useUser } from '@/app/context/reducer';
-import { useRouter } from 'next/navigation';
-import { toggle } from '@/lib/utils';
-import SignInPage from '@/app/authPage/signin/signinPage';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRouter } from "next/navigation";
+import CBTGuard from "@/app/components/CBTGuard";
+import { useCBTStore } from "@/app/store/cbt";
 
 export default function Page() {
-  const [checkedSubjects, setCheckedSubjects] = useState<string[]>(['English Language']); // always selected
+  const router = useRouter();
+
+  const {
+    setExamMode,
+    resetCBT,
+    addSubject,
+    subjects: storedSubjects,
+  } = useCBTStore();
+
+  // English is compulsory
+  const [checkedSubjects, setCheckedSubjects] = useState<string[]>([
+    "English Language",
+  ]);
+
+  const [mode, setMode] = useState<string>("");
+
+  /**
+   * Sync local checkbox UI with Zustand (important for refresh / back nav)
+   */
+  useEffect(() => {
+    if (storedSubjects.length) {
+      setCheckedSubjects(storedSubjects.map((s) => s.subject));
+    }
+  }, [storedSubjects]);
 
   const handleCheckBox = (e: ChangeEvent<HTMLInputElement>) => {
     const subject = e.target.name;
 
     setCheckedSubjects((prev) => {
+      // English cannot be removed
+      if (subject === "English Language") return prev;
+
       if (prev.includes(subject)) {
-        // prevent removing English
-        if (subject === 'English Language') return prev;
-        return prev.filter((item) => item !== subject);
-      } else {
-        if (prev.length === 4) {
-          alert('You can only select four subjects (English + 3 others)');
-          return prev;
-        }
-        
-        return [...prev, subject];
+        return prev.filter((s) => s !== subject);
       }
+
+      if (prev.length === 4) {
+        alert("You can only select 4 subjects (English + 3 others)");
+        return prev;
+      }
+
+      return [...prev, subject];
     });
   };
-  const { state, dispatch } = useUser();
-const [mode, setMode] = useState('')
-  const handleValuChange =(value:string)=>{
-    setMode(value)
-  }
-  
-  const router = useRouter()
-              const [showLogin, setShowLogin] = useState(false)
-     
-    const showLoginPage = () =>{
-    toggle(setShowLogin, showLogin); // then toggle the registration page
-                 }           
-const handleNavigate = () =>{
-  const email =''
-  const firstName=''
-  const lastName =''
-  const token =''
-  const role=''
-    if (checkedSubjects.length !== 4) {
-          alert('Please select up to four subjects (English + 3 others)');
-          return checkedSubjects;
-        }
-  dispatch({
-           type: 'CBT',
-           payload: {
-             email:state.email,
-             firstName:state.firstName,
-             lastName:state.lastName,
-             token:state.token,
-             role:state.role,
-             subjects:checkedSubjects,
-             examMode:mode
-           }
-         });
- console.log(state)
-         // Redirect to dashboard after login
-        state.firstName!== null && state.firstName!=='' 
-        ? router.push('/exam_preparation/jamb_simulator/exam_instructions'):
-        showLoginPage()
+
+  const handleNavigate = () => {
+    if (!mode) {
+      alert("Please select a test mode");
+      return;
     }
 
+    if (checkedSubjects.length !== 4) {
+      alert("Please select English and exactly 3 other subjects");
+      return;
+    }
+
+    // reset previous CBT session
+    resetCBT();
+
+    // save exam mode
+    setExamMode(mode);
+
+    // save subjects into CBT store
+    checkedSubjects.forEach((subject) => {
+      addSubject(subject);
+    });
+
+    router.push("/exam_preparation/jamb_simulator/exam_instructions");
+  };
+
   return (
-    <>
-     {showLogin  && 
-          <div className='md:fixed absolute p-10 md:p-0 inset-0 bg-[#0000008F] bg-opacity-50  z-40'>
-            <SignInPage setShowLogin={setShowLogin}/>
-          </div>
-          }    
+    <CBTGuard>
+      {/* HEADER */}
       <section className="flex flex-col md:flex-row gap-[12px] justify-between bg-[#F3F3F3] xl:px-[100px] px-[16px] py-[24px]">
-        <div>
-          <h2 className="text-[32px] font-[700]">JAMB SIMULATOR</h2>
-        </div>
+        <h2 className="text-[32px] font-[700]">JAMB SIMULATOR</h2>
+
         <button className="w-[280px] px-[24px] py-[12px] bg-[#FF5900] rounded-[8px] text-white">
           Study Saved questions
         </button>
       </section>
 
+      {/* MAIN */}
       <section className="xl:px-[100px] px-[16px] flex gap-[20px] md:flex-row flex-col bg-[#F3F3F3] py-[24px]">
-        <aside className="lg:w-[836px] bg-[#FFFFFF] flex flex-col gap-[48px] lg:px-[32px] px-[16px] py-[40px]">
+        {/* LEFT */}
+        <aside className="lg:w-[836px] bg-white flex flex-col gap-[48px] lg:px-[32px] px-[16px] py-[40px]">
           <p>
-            Select your subject combination. English language has been selected
-            for you because it is compulsory. Select three other subjects of
-            your choice.
+            Select your subject combination. English Language has been selected
+            for you because it is compulsory. Select three other subjects.
           </p>
+
           <div className="flex flex-col gap-2">
             {subjects.map((subject, index) => (
-              <span key={index} className="flex gap-2 items-center">
+              <label key={index} className="flex gap-2 items-center">
                 <input
                   type="checkbox"
                   name={subject.name}
                   checked={checkedSubjects.includes(subject.name)}
-                  disabled={subject.name === 'English Language'}
+                  disabled={subject.name === "English Language"}
                   onChange={handleCheckBox}
                 />
-                <span>{subject.name}</span>
-              </span>
+                {subject.name}
+              </label>
             ))}
-            <div className='flex flex-col gap-[12px] mt-[12px]'>
-            <p>Select Test Mode</p>
-           <Select onValueChange={handleValuChange}>
+
+            {/* TEST MODE */}
+            <div className="flex flex-col gap-[12px] mt-[12px]">
+              <p>Select Test Mode</p>
+
+              <Select value={mode} onValueChange={setMode}>
                 <SelectTrigger className="w-full md:w-[257px]">
-                    <SelectValue placeholder="Select Test Mode" />
+                  <SelectValue placeholder="Select Test Mode" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value='Practice Mode'>Practice Mode</SelectItem>
-                    <SelectItem value='Exam Mode'>Exam Mode</SelectItem>
+                  <SelectItem value="Practice Mode">
+                    Practice Mode
+                  </SelectItem>
+                  <SelectItem value="Exam Mode">Exam Mode</SelectItem>
                 </SelectContent>
-            </Select>
-          <button className='px-[24px] py-[12px] rounded-[8px] bg-[#FF5900] w-[171px] text-white' onClick={handleNavigate}>Next
-            {/* <Link href={'/exam_preparation/jamb_simulator/exam_instructions'}>Next</Link> */}
-          </button>
+              </Select>
 
+              <button
+                onClick={handleNavigate}
+                className="px-[24px] py-[12px] rounded-[8px] bg-[#FF5900] w-[171px] text-white"
+              >
+                Next
+              </button>
             </div>
           </div>
+        </aside>
 
-          </aside>
-
-        {/* RIGHT SIDEBAR (unchanged from your original) */}
-        <aside className="lg:w-[370px] flex flex-col gap-[40px] border-1 p-2">
+        {/* RIGHT SIDEBAR */}
+        <aside className="lg:w-[370px] flex flex-col gap-[40px] p-2">
           <article className="flex flex-col gap-[24px]">
             <div className="grid grid-cols-5 pt-3 gap-[20px]">
               {Schools.map((school, index) => (
                 <div
                   key={index}
-                  className={`rounded-none text-[12px] lg:text-[10px] p-[2px] lg:p-[10px] text-white ${school.bgColor1}`}
+                  className={`text-[12px] p-[10px] text-white ${school.bgColor1}`}
                 >
                   <Link
                     href="/"
-                    className={`flex items-center justify-center lg:text-[9px] xl:text-[9px] lg:px-[2px] ${school.bgColor2}`}
+                    className={`flex justify-center ${school.bgColor2}`}
                   >
                     {school.name}
                   </Link>
                 </div>
               ))}
             </div>
+
             <Link href="" className="text-[#097C46] underline">
-              Access guide on how to get admission into your desired school and
-              courses
+              Access guide on admission into your desired school
             </Link>
           </article>
 
-          <div className="md:flex hidden">
-            <div className="bg-[#FEF6E6] p-[16px] flex flex-col gap-[24px]">
-              <span className="flex items-center px-[16px] py-[8px] gap-[12px]">
-                <FiPhoneOutgoing className="w-[50px] h-[50px]" />
-                <p className="font-semibold text-[24px] leading-[100%]">
-                  Need Help? Book a one-on-one Tutor
-                </p>
-              </span>
-              <p className="text-[16px]">
-                Need extra help with your studies? Connect with experienced
-                tutors for one-on-one or group lessons tailored to your needs.
+          <div className="md:flex hidden bg-[#FEF6E6] p-[16px] flex-col gap-[24px]">
+            <span className="flex items-center gap-[12px]">
+              <FiPhoneOutgoing className="w-[40px] h-[40px]" />
+              <p className="font-semibold text-[20px]">
+                Need Help? Book a Tutor
               </p>
-            </div>
+            </span>
+            <p>
+              Connect with experienced tutors for one-on-one or group lessons.
+            </p>
           </div>
 
           <div className="md:flex hidden">
-            <span>
-              <Image src={image} alt="" />
+            <figure>
+              <Image src={image} alt="Promo" />
               <figcaption className="text-center pt-2.5">
                 <Link className="underline text-[#097647]" href="">
-                  Sign Up for Our Various Holiday Classes
+                  Sign Up for Holiday Classes
                 </Link>
               </figcaption>
-            </span>
+            </figure>
           </div>
 
           <div className="bg-[#FFCCB0] p-[16px] flex flex-col gap-[24px]">
-            <p className="text-[20px]">
-              Start Free CBT Exam Simulation on WAEC and JAMB
-            </p>
-            <Button
-              variant="outline"
-              className="w-[50%] text-[#FF5900] border border-[#FF5900] bg-transparent"
-            >
-              <Link href="">Start Now </Link>
-            </Button>
-          </div>
-
-          <div className="bg-[#FBE3B0] p-[16px] flex flex-col gap-[24px] mb-[50px]">
-            <p className="text-[18px]">
-              Watch Video Lessons on various subjects and topics to be better
-              prepared for your exams
-            </p>
-            <Button
-              variant="outline"
-              className="w-[50%] text-[#FF5900] border border-[#FF5900] bg-transparent"
-            >
-              <Link href="">Watch Now </Link>
+            <p>Start Free CBT Exam Simulation on WAEC & JAMB</p>
+            <Button variant="outline" className="border-[#FF5900] text-[#FF5900]">
+              <Link href="">Start Now</Link>
             </Button>
           </div>
         </aside>
       </section>
-    </>
+    </CBTGuard>
   );
 }

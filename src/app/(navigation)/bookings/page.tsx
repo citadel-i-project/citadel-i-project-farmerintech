@@ -1,9 +1,91 @@
+"use client"
+
 import Image from "next/image";
 import { FaGraduationCap } from "react-icons/fa";
 import Bookings1 from "@/app/assets/bookings1.png"
 import Bookings2 from "@/app/assets/bookings2.jpg"
+import { useEffect, useState } from "react";
+import TutorBookingForm from "./booking";
+
+
+interface Subject {
+  name: string;
+}
+
+interface ClassLevel {
+  group: string;
+  years: string[];
+}
+
+interface Teacher {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  discipline: string;
+  subjects: string[] | Subject[];
+  isVerified: boolean;
+  classLevels: ClassLevel[];
+  passportPhoto:any
+  courseOfStudy:string
+  qualifications:string
+  gender:string
+  bio:string
+}
+
+interface PaginatedTeachersResponse {
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  teachers: Teacher[];
+}
 
 export default function page (){
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+const [showDetails, setShowDetails] = useState(false);
+  const limit = 10;
+
+  const fetchTeachers = async (pageNumber = 1) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://api.citadel-i.com.ng/api/v1/admin/get_teachers?page=${pageNumber}&limit=${limit}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to fetch teachers");
+
+      const data: PaginatedTeachersResponse = await res.json();
+      setTeachers(data.teachers);
+      setTotalPages(data.totalPages);
+      setPage(data.page);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeachers(page);
+  }, [page]);
+  const normalizeClassLevels = (
+    levels: ClassLevel | ClassLevel[] | undefined
+  ): ClassLevel[] => {
+    if (Array.isArray(levels)) return levels;
+    if (levels) return [levels];
+    return [];
+  };
     return(
         <>
        <section className=" bg-[#FFFBF9] lg:px-[100px] px-[32px] py-[64px]">
@@ -15,30 +97,77 @@ export default function page (){
                 Get one-on-one support from experienced and trusted tutors. Whether you're preparing for an exam, need help with assignments, or want to improve in specific subjects — we’ve got you covered.
             </p>
             <button className="bg-[#FF5900] text-white px-[24px] py-[12px] gap-[8px] rounded-[8px]">Book a Tutor Now</button>
-            <div className="flex items-center gap-[80px] md:gap-[50px] flex-col md:flex-row">
-                <div className="lg:w-[287px] md:w-[250px] ">
-                    <div className="bg-white bg-white rounded-[8px] ">
-                    <Image src={Bookings1} alt="" className="h-[292px] "/>
-                    </div>
-                    <p className="mt-5 font-[600]">Mr. Adeniji</p>
-                    <span>A veterian teacher with over 2 decades of experience in the filed of education </span>
-                </div>
-                    <div className="lg:w-[287px] md:w-[250px]   ">
-                    <div className="h-[292px] bg-white rounded-[8px]">
-                    <Image src={Bookings1} alt="" className="h-[292px] "/>
-                    </div>
-                    <p className="mt-5 font-[600]">Mr. Adeniji</p>
-                    <span>A veterian teacher with over 2 decades of experience in the filed of education </span>
-                </div>
-                <div className="lg:w-[287px] md:w-[250px]   ">
-                    <div className="h-[292px] bg-white rounded-[8px]">
-                    <Image src={Bookings1} alt="" className="h-[292px] "/>
-                    </div>
-                    <p className="mt-5 font-[600]">Mr. Adeniji</p>
-                    <span>A veterian teacher with over 2 decades of experience in the filed of education </span>
-                </div>
+           {/* teachers should be fecthed here  */}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-[40px] mt-10">
+  {teachers.map((teacher) => (
+    <div
+      key={teacher.id}
+      className="bg-white rounded-[16px] p-[16px] shadow-sm hover:shadow-md transition"
+    >
+      {/* Image */}
+      <div className="w-full h-[260px] rounded-[12px] overflow-hidden bg-[#F5F5F5]">
+        <Image
+          src={teacher.passportPhoto || "/avatar.png"}
+          alt={`${teacher.firstName} ${teacher.lastName}`}
+          width={300}
+          height={260}
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-            </div>
+      {/* Content */}
+      <div className="mt-4 flex flex-col gap-2">
+        <h3 className="font-[600] text-[18px]">
+            
+          {teacher.firstName} {teacher.lastName}
+        </h3>
+ <p className="text-sm text-gray-600">
+         <span className="font-bold">Gender</span>: {teacher.gender} 
+        </p>
+        <p className="text-sm text-gray-600">
+          <span className="font-bold">Descipline:</span>  {teacher.discipline} - {teacher.courseOfStudy} ({teacher.qualifications})
+        </p>
+
+         <p className="text-sm text-gray-600">
+          <span className="font-bold">Bio</span>: {teacher.bio}
+        </p>
+        {/* Subjects */}
+        <div className="flex flex-wrap gap-2 mt-2">
+          
+          {teacher.subjects?.slice(0, 3).map((subject: any, index) => (
+            <span
+              key={index}
+              className="text-xs bg-[#FFEEE6] text-[#FF5900] px-3 py-1 rounded-full"
+            >
+              {typeof subject === "string" ? subject : subject.name}
+            </span>
+          ))}
+        </div>
+{normalizeClassLevels(teacher.classLevels).length > 0 ? (
+              <ul className="space-y-1 text-sm">
+                {normalizeClassLevels(teacher.classLevels).map((level, idx) => (
+                  <li
+                    key={idx}
+                    className="bg-gray-50 border rounded-md px-3 py-2"
+                  >
+                    <span className="font-medium">{level.group}:</span>{" "}
+                    {level.years.join(", ")}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-400 text-sm">—</p>
+            )}
+        {/* Footer */}
+        <button className="mt-4 w-full bg-[#FF5900] text-white py-[10px] rounded-[8px] text-sm hover:opacity-90">
+          <a href="#book">Book Tutor</a>
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
+
+            
           </aside>
           <aside className="mt-10">
             <h2 className="font-[600] text-center mb-5">Why Book a Tutor With Us?</h2>
@@ -80,33 +209,8 @@ export default function page (){
             </div>
           </aside>
         </section>
-        <section className="bg-[#F9D68A] flex md:flex-row flex-col gap-[32px] justify-center px-[32px] py-[24px]">
-            <aside className="w-full md:w-[519px] bg-white text-black p-[24px] rounded-[8px] gap-[31px]">
-                <h2 className="font-[600] mb-5">Tutor Booking</h2>
-                <form className="flex gap-[24px] flex-col ">
-                <div>
-                    <label>First and last Name</label>
-                    <input type="text" className="md:w-[417px] w-full h-[43px] p-[12px] rounded-[8px] border-1"/>
-                </div>
-                 <div>
-                    <label>Email address</label>
-                    <input type="text" className="md:w-[417px] w-full h-[43px] p-[12px] rounded-[8px] border-1"/>
-                </div> 
-                <div>
-                    <label>Phone Number</label>
-                    <input type="text" className="md:w-[417px] w-full h-[43px] p-[12px] rounded-[8px] border-1"/>
-                </div>
-                 <div>
-                    <label>Class Booking For</label>
-                    <input type="text" className="md:w-[417px] w-full h-[43px] p-[12px] rounded-[8px] border-1"/>
-                </div>
-                <div>
-                    <p>Note: You need to make a payment of #15 000  for your bookings to be successful </p>
-                </div>
-                <button className="bg-[#FF5900] text-white px-[24px] py-[12px] gap-[8px] rounded-[8px]">Make payment</button>
-
-                </form>
-            </aside>
+        <section id="book" className="bg-[#F9D68A] flex md:flex-row flex-col gap-[32px] justify-center px-[32px] py-[24px]">
+           <TutorBookingForm/>
             <aside className="max-w-[477px]">
               <h2 className="font-[600] mb-5">Terms and Conditions/Process</h2>
               <ul>

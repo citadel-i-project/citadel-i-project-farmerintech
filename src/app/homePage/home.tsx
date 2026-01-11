@@ -412,15 +412,16 @@ export default function home() {
           <span className=" flex flex-col md:flex-row gap-[20px]">
             <Button
               variant="outline"
-              className="hover:bg-black h-[48px] text-[18px] hover:text-white bg-[#FF5900] text-white"  onClick={()=>showRegPage()}>
+              className="hover:bg-black h-[48px] cursor-pointer text-[18px] hover:text-white bg-[#FF5900] text-white" >
               
-              Become a Tutor Now!
+              <a href='/teachers/register'>Become a Tutor Now!</a>
             </Button>
 
             <Button
               variant="outline"
-              className="hover:bg-black h-[48px] text-[18px] hover:text-white bg-[#FFEEE6] text-[#FF5900]">
-              Become a Tutor
+              className="hover:bg-black h-[48px] cursor-pointer text-[18px] hover:text-white bg-[#FFEEE6] text-[#FF5900]">
+                            <a href='/teachers/register'>Become a Tutor </a>
+
             </Button>
           </span>
         </div>

@@ -3,20 +3,19 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Eye, EyeOff, ChevronsRight, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import googleLogo from "@/app/assets/google.svg";
+import { useRouter, usePathname } from "next/navigation";
+import { useUser } from "@/app/context/reducer";
+import { useAuthStore } from "@/app/store/user";
 
- 
-
-export const SignUpForm = () => {
-    const router = useRouter();
-  
+export default function SignInForm () {
+   const router = useRouter();
+  const pathname = usePathname();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    firstName: "",
-    lastName: "",
   });
-
+  const { dispatch } = useUser();
   const [isChecked, setIsChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -37,19 +36,11 @@ export const SignUpForm = () => {
     setMessage("");
     setIsLoading(true);
 
-    const { firstName, lastName, email, password } = formData;
+    const { email, password } = formData;
 
-    if (!firstName.trim()) {
-      setIsLoading(false);
-      return setError("First Name cannot be empty");
-    }
-    if (!lastName.trim()) {
-      setIsLoading(false);
-      return setError("Last Name cannot be empty");
-    }
     if (!email.trim()) {
       setIsLoading(false);
-      return setError("Email cannot be empty");
+      return setError("Email is required");
     }
     if (password.length < 8) {
       setIsLoading(false);
@@ -57,7 +48,7 @@ export const SignUpForm = () => {
     }
 
     try {
-      const res = await fetch("https://api.citadel-i.com.ng/api/v1/user/auth/signup", {
+      const res = await fetch("https://api.citadel-i.com.ng/api/v1/user/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -65,20 +56,43 @@ export const SignUpForm = () => {
 
       const result = await res.json();
 
-      if (res.status === 201) {
-        setMessage(result?.message || "Account created successfully");
-        setFormData({ email: "", password: "", firstName: "", lastName: "" });
+      if (res.ok) {
+        setMessage(typeof result.message === "string" ? result.message : "Login successful");
+        setFormData({ email: "", password: "" });
         setIsChecked(false);
-        router.push("/teachers/login");
-
+        // Redirect or save token if needed
+        router.push("/student");
+      useAuthStore.getState().login({
+        email: result.user.email,
+        firstName: result.user.firstName,
+        lastName: result.user.lastName,
+        token: result.user.token,
+        role: result.user.role, // "student" | "teacher"
+        id:result.user.id,
+        profileImage:result.user.image
+        });
+        dispatch({
+    type: 'LOGIN',
+    payload: {
+      email:result.user.email,
+      firstName:result.user.firstName,
+      lastName:result.user.lastName,
+      token:result.user.token,
+      role:result.user.role,
+      subjects:[],
+      examMode:''
+    },
+  });
       } else {
-        const errMsg =
-          typeof result.message === "string" ? result.message : "Something went wrong";
-        setError(errMsg);
+        const errorMsg =
+          typeof result.message === "string"
+            ? result.message
+            : "Invalid credentials or server error.";
+        setError(errorMsg);
       }
     } catch (err: any) {
-      console.error("Signup error:", err);
-      setError("Unable to connect to the server.");
+      console.error("Login error:", err);
+      setError("Unable to connect to server. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -88,91 +102,66 @@ export const SignUpForm = () => {
     <form className="space-y-3" onSubmit={handleSubmit}>
       {message && <p className="text-green-500 text-sm">{message}</p>}
 
-      <div className="md:flex gap-3">
-        <div className="md:flex-1">
-          <label className="text-sm">First Name</label>
-          <input
-            value={formData.firstName}
-            type="text"
-            name="firstName"
-            onChange={handleInput}
-            placeholder="First Name"
-            className="w-full p-2 border rounded-[8px] text-sm border-gray-500 outline-none focus:border-black"
-          />
-        </div>
-        <div className="flex-1">
-          <label className="text-sm">Last Name</label>
-          <input
-            value={formData.lastName}
-            type="text"
-            name="lastName"
-            onChange={handleInput}
-            placeholder="Last Name"
-            className="w-full p-2 border rounded-[8px] text-sm border-gray-500 outline-none focus:border-black"
-          />
-        </div>
-      </div>
-
       <label className="text-sm">Email Address</label>
       <input
-        value={formData.email}
         type="email"
+        className="w-full p-2 border outline-none rounded-lg text-sm border-gray-500 focus:border-black"
+        placeholder="Email Address"
+        value={formData.email}
         name="email"
         onChange={handleInput}
-        placeholder="Email Address"
-        className="w-full p-2 border rounded-[8px] text-sm border-gray-500 outline-none focus:border-black"
       />
 
       <div className="relative">
         <label className="text-sm">Password</label>
         <input
           type={showPassword ? "text" : "password"}
+          className="w-full p-2 border outline-none rounded-lg text-sm border-gray-500 focus:border-black"
+          placeholder="Password"
           value={formData.password}
           name="password"
           onChange={handleInput}
-          placeholder="Password"
-          className="w-full p-2 border rounded-[8px] text-sm border-gray-500 outline-none focus:border-black"
         />
         <button
           type="button"
-          onClick={() => setShowPassword(!showPassword)}
           className="absolute right-3 top-8 text-gray-500"
+          onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
 
-      <div className="flex items-center text-xs">
-        <input
-          type="checkbox"
-          className="mr-2"
-          checked={isChecked}
-          onChange={handleCheck}
-        />
-        <span>
-          I agree to the citadel-i-project{" "}
-          <a href="/terms_conditions" className="text-orange-500">
-            Terms & Conditions
-          </a> and <a href="/privacy_policy"  className="text-orange-500">Privacy Policy</a>
-        </span>
+      <div className="flex items-center text-xs justify-between">
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            className="mr-2 bg-gray-300 rounded"
+            onChange={handleCheck}
+            checked={isChecked}
+          />
+          Remember me
+        </label>
+        <a href="#" className="text-orange-500">
+          Forgot password?
+        </a>
       </div>
 
       <button
         type="submit"
-        disabled={!isChecked || isLoading}
         className={`w-full ${
           isChecked ? "bg-orange-500" : "bg-gray-400"
-        } text-white py-2 rounded-[8px] text-sm flex gap-3 items-center justify-center`}
+        } text-white py-2 rounded-lg text-sm flex gap-3 items-center justify-center`}
+        disabled={!isChecked || isLoading}
       >
         {isLoading ? (
           <>
             <Loader2 size={18} className="animate-spin" />
-            Creating Account...
+            Logging in...
           </>
         ) : (
           <>
-            Create Account
-            <ChevronsRight size={24} />
+            Login
+            <ChevronsRight size={20} />
           </>
         )}
       </button>
@@ -184,7 +173,7 @@ export const SignUpForm = () => {
         <span className="text-gray-500 text-xs px-2">Or</span>
         <hr className="flex-grow border-gray-300" />
       </div>
-{/* 
+
       <div className="flex items-center justify-center w-full">
         <button
           type="button"
@@ -199,12 +188,12 @@ export const SignUpForm = () => {
           />
           Continue with Google
         </button>
-      </div> */}
+      </div>
 
       <p className="text-center text-xs text-gray-500 mt-2">
-        Already have an account?{" "}
-        <a href="/student/login" className="text-orange-500">
-          Log in
+        Don’t have an account?{" "}
+        <a href="/signup" className="text-orange-500">
+          Register now!
         </a>
       </p>
     </form>

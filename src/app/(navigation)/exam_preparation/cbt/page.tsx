@@ -55,29 +55,29 @@ export default function page (){
             <div className='bg-[#F3F3F3] p-[24px] gap-[32px] rounded-[8px] flex flex-col'>
                 <div className='flex gap-[14.19px] w-[275px] flex-wrap'>
                    <button className='p-[8.87px] bg-[#B4E6CF]'>
-                    <span className='bg-[#097C47] p-[5px] text-white text-[14.19px]'>WAEC</span>
+                    <a href={'/exam_preparation/jamb_simulator'}  className='bg-[#097C47] p-[5px] text-white text-[14.19px]'>WAEC</a >
                     </button>
                     <button className='p-[8.87px] bg-[#B4E6CF]'>
-                    <span className='bg-[#097C47] p-[5px] text-white text-[14.19px]'>NECO</span>
+                    <a href={'/exam_preparation/jamb_simulator'}  className='bg-[#097C47] p-[5px] text-white text-[14.19px]'>NECO</a >
 
                     </button>
                     <button className='p-[8.87px] bg-[#B4E6CF]'>
-                    <span className='bg-[#097C47] p-[5px] text-white text-[14.19px]'>UTME</span>
+                    <a href={'/exam_preparation/jamb_simulator'} className='bg-[#097C47] p-[5px] text-white text-[14.19px]'>UTME</a>
                     </button>
                     <button className='p-[8.87px] bg-[#B4E6CF]'>
-                    <span className='bg-[#097C47] p-[5px] text-white text-[14.19px]'>IGCSE</span>
+                    <a href={'/exam_preparation/jamb_simulator'} className='bg-[#097C47] p-[5px] text-white text-[14.19px]'>IGCSE</a>
                     </button>
                     <button className='p-[8.87px] bg-[#B4E6CF]'>
-                    <span className='bg-[#097C47] p-[5px] text-white text-[14.19px]'>School exam</span>
+                    <a href={'/exam_preparation/jamb_simulator'} className='bg-[#097C47] p-[5px] text-white text-[14.19px]'>School exam</a>
                     </button>
                 </div>
                 <div>
                     <p className='text-[24px] font-[500]'>Custom Simulator</p>
                     <p>Great for practicing NECO, WAEC, UTME, School exams etc.</p>
                 </div>
-                <button className='px-[24px] py-[12px] rounded-[8px] bg-[#FF5900] w-[171px] text-white'>
+                <a href={'/exam_preparation/jamb_simulator'}  className='px-5 py-2 flex items-center w-[171px] justify-center text-center rounded-[8px] bg-[#FF5900] text-white'>
                     Start Now
-                </button>
+                </a>
             </div>
 
         </aside>
@@ -99,7 +99,7 @@ export default function page (){
                 </div>
               ))}
             </div>
-            <Link href="" className="text-[#097C46] underline">
+            <Link href="/admission_info" className="text-[#097C46] underline">
               Access guide on how to get admission into your desired school and
               courses
             </Link>
@@ -139,7 +139,7 @@ export default function page (){
               variant="outline"
               className="w-[50%] text-[#FF5900] border border-[#FF5900] bg-transparent"
             >
-              <Link href="">Start Now </Link>{" "}
+              <Link href={'/exam_preparation/jamb_simulator'} >Start Now </Link>{" "}
             </Button>
           </div>
 
@@ -152,7 +152,7 @@ export default function page (){
               variant="outline"
               className="w-[50%] text-[#FF5900] border border-[#FF5900] bg-transparent"
             >
-              <Link href="">Watch Now </Link>{" "}
+              <Link href="href={'/exam_preparation/jamb_simulator'} ">Watch Now </Link>{" "}
             </Button>
           </div>
         </aside>

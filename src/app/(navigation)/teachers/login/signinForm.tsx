@@ -48,7 +48,7 @@ export const SignInForm = () => {
     }
 
     try {
-      const res = await fetch("https://api.citadel-i.com.ng/api/v1/user/auth/signin", {
+      const res = await fetch("https://api.citadel-i.com.ng/api/v1/user/auth/teachers/signIn", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -61,9 +61,29 @@ export const SignInForm = () => {
         setFormData({ email: "", password: "" });
         setIsChecked(false);
         // Redirect or save token if needed
-        router.push("/student");
-    
-      
+        router.push("/teachers/dashboard");
+        useAuthStore.getState().login({
+        // id:result.teacher.id,
+        email: result.teacher.email,
+        firstName: result.teacher.firstName,
+        lastName: result.teacher.lastName,
+        token: result.token,
+        role: result.teacher.role, // "student" | "teacher"
+        id:result.teacher.id,
+        profileImage:result.teacher.passportPhoto
+        });
+  //       dispatch({
+  //   type: 'LOGIN',
+  //   payload: {
+  //     email:result.user.email,
+  //     firstName:result.user.firstName,
+  //     lastName:result.user.lastName,
+  //     token:result.user.token,
+  //     role:result.user.role,
+  //     subjects:[],
+  //     examMode:''
+  //   },
+  // });
       } else {
         const errorMsg =
           typeof result.message === "string"
@@ -171,9 +191,9 @@ export const SignInForm = () => {
         </button>
       </div> */}
 
-      <p className="text-center text-xs text-gray-500 mt-2">
+      <p className="text-center text-xs text-gray-500">
         Don’t have an account?{" "}
-        <a href="/student/register" className="text-orange-500">
+        <a href="/teachers/register" className="text-orange-500">
           Register now!
         </a>
       </p>
