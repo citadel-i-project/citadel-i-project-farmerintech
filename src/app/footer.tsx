@@ -63,6 +63,7 @@ export default function footer() {
           <p className="text-white text-[14px] text-center">
             Copyright &copy; 2025 Citadel-i-Projects
           </p>
+          <p className="text-white">Citagraphx</p>
           <span className="text-white text-[14px] justify-between md:justify-center flex gap-[32px]">
             <a className="" href="/terms_conditions">Terms and Condition</a>
             <a className="" href="/privacy_policy">Privacy Policy</a>
